@@ -1,6 +1,8 @@
 package com.example.banksecurity.Controllers;
 
+import com.example.banksecurity.DTOs.Request.CustomerRegistrationDTO;
 import com.example.banksecurity.Services.CustomerService;
+import com.example.banksecurity.Services.RegistrationService;
 import com.example.banksecurity.Storage.Customer.Customer;
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccount;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,12 @@ import java.util.List;
 public class CustomerController {
 
     CustomerService customerService;
+    RegistrationService registrationService;
 
     @Autowired
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService, RegistrationService registrationService) {
         this.customerService = customerService;
+        this.registrationService = registrationService;
     }
 
     @GetMapping("/getAll")
@@ -57,5 +61,10 @@ public class CustomerController {
     @PutMapping("/{id}/transferfromsavings/{savingsIndex}")
     public ResponseEntity<String> transferFromSavings(@PathVariable("id") Long id, @PathVariable("savingsIndex") Integer savingsIndex, @RequestParam String amount) {
         return customerService.transferFromSavings(id, savingsIndex, new BigDecimal(amount));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> sendRegisterRequest(@RequestBody CustomerRegistrationDTO customerRegistrationDTO) {
+        return registrationService.sendRegistrationRequest(customerRegistrationDTO);
     }
 }
