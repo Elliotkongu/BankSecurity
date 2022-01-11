@@ -1,10 +1,10 @@
 package com.example.banksecurity.Controllers;
 
+import com.example.banksecurity.DTOs.Request.BankerRegistrationDTO;
 import com.example.banksecurity.DTOs.Response.RegistrationRequestDTO;
 import com.example.banksecurity.Services.BankerService;
 import com.example.banksecurity.Services.RegistrationService;
 import com.example.banksecurity.Storage.Banker.Banker;
-import com.example.banksecurity.Storage.Customer.RegistrationRequest.RegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,5 +46,11 @@ public class BankerController {
     @PreAuthorize("hasRole('BANKER')")
     public ResponseEntity<String> handleTransaction(@PathVariable("id") Long transactionId) {
         return bankerService.handleTransaction(transactionId);
+    }
+
+    @PostMapping("/register")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> registerBanker(@RequestBody BankerRegistrationDTO bankerRegistrationDTO) {
+        return registrationService.registerBanker(bankerRegistrationDTO);
     }
 }

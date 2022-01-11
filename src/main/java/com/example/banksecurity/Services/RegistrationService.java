@@ -1,6 +1,9 @@
 package com.example.banksecurity.Services;
 
+import com.example.banksecurity.DTOs.Request.BankerRegistrationDTO;
 import com.example.banksecurity.DTOs.Request.CustomerRegistrationDTO;
+import com.example.banksecurity.Storage.Banker.Banker;
+import com.example.banksecurity.Storage.Banker.BankerRepository;
 import com.example.banksecurity.Storage.Customer.Customer;
 import com.example.banksecurity.Storage.Customer.CustomerRepository;
 import com.example.banksecurity.Storage.Customer.RegistrationRequest.RegistrationRequest;
@@ -19,14 +22,16 @@ public class RegistrationService {
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
     CustomerRepository customerRepository;
+    BankerRepository bankerRepository;
 
     @Autowired
     public RegistrationService(RegistrationRequestRepository registrationRequestRepository, PasswordEncoder passwordEncoder,
-                               UserRepository userRepository, CustomerRepository customerRepository) {
+                               UserRepository userRepository, CustomerRepository customerRepository, BankerRepository bankerRepository) {
         this.registrationRequestRepository = registrationRequestRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
+        this.bankerRepository = bankerRepository;
     }
 
     public ResponseEntity<String> sendRegistrationRequest(CustomerRegistrationDTO customerRegistrationDTO) {
@@ -54,5 +59,12 @@ public class RegistrationService {
             return ResponseEntity.ok().body("Customer account successfully opened");
         }
         return ResponseEntity.badRequest().body("Registration request not found");
+    }
+
+    public ResponseEntity<String> registerBanker(BankerRegistrationDTO bankerRegistrationDTO) {
+        User user = new User(bankerRegistrationDTO.getUsername(), passwordEncoder.encode(bankerRegistrationDTO.getPassword()));
+        userRepository.save(user);
+        bankerRepository.save(new Banker(user.getId()));
+        return ResponseEntity.ok().body("New banker registered");
     }
 }

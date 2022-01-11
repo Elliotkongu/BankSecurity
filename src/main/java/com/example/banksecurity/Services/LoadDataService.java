@@ -1,5 +1,7 @@
 package com.example.banksecurity.Services;
 
+import com.example.banksecurity.Storage.Admin.Admin;
+import com.example.banksecurity.Storage.Admin.AdminRepository;
 import com.example.banksecurity.Storage.Customer.CustomerRepository;
 import com.example.banksecurity.Storage.User.Role.ERole;
 import com.example.banksecurity.Storage.User.Role.Role;
@@ -29,6 +31,8 @@ public class LoadDataService implements CommandLineRunner {
     CustomerService customerService;
     @Autowired
     BankerService bankerService;
+    @Autowired
+    AdminRepository adminRepository;
 
 
     @Override
@@ -48,6 +52,7 @@ public class LoadDataService implements CommandLineRunner {
         if (userRepository.findAll().isEmpty()) {
             registerCustomer();
             registerBanker();
+            registerAdmin();
         }
     }
 
@@ -71,5 +76,16 @@ public class LoadDataService implements CommandLineRunner {
         user.setRole(role);
         userRepository.save(user);
         bankerService.addBanker(user.getId());
+    }
+
+    void registerAdmin() {
+        User user = new User("admin", passwordEncoder.encode("password"));
+        Set<Role> role = new HashSet<>();
+        Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Error: Admin role not found"));
+        role.add(userRole);
+        user.setRole(role);
+        userRepository.save(user);
+        adminRepository.save(new Admin(user.getId()));
     }
 }
