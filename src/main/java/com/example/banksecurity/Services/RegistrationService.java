@@ -22,16 +22,16 @@ public class RegistrationService {
     PasswordEncoder passwordEncoder;
     UserRepository userRepository;
     CustomerRepository customerRepository;
-    BankerRepository bankerRepository;
+    BankerService bankerService;
 
     @Autowired
     public RegistrationService(RegistrationRequestRepository registrationRequestRepository, PasswordEncoder passwordEncoder,
-                               UserRepository userRepository, CustomerRepository customerRepository, BankerRepository bankerRepository) {
+                               UserRepository userRepository, CustomerRepository customerRepository, BankerService bankerService) {
         this.registrationRequestRepository = registrationRequestRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
-        this.bankerRepository = bankerRepository;
+        this.bankerService = bankerService;
     }
 
     public ResponseEntity<String> sendRegistrationRequest(CustomerRegistrationDTO customerRegistrationDTO) {
@@ -64,7 +64,7 @@ public class RegistrationService {
     public ResponseEntity<String> registerBanker(BankerRegistrationDTO bankerRegistrationDTO) {
         User user = new User(bankerRegistrationDTO.getUsername(), passwordEncoder.encode(bankerRegistrationDTO.getPassword()));
         userRepository.save(user);
-        bankerRepository.save(new Banker(user.getId()));
+        bankerService.addBanker(user.getId());
         return ResponseEntity.ok().body("New banker registered");
     }
 }
