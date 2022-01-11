@@ -2,6 +2,7 @@ package com.example.banksecurity.Controllers;
 
 import com.example.banksecurity.DTOs.Request.CustomerRegistrationDTO;
 import com.example.banksecurity.DTOs.Request.StartTransactionDTO;
+import com.example.banksecurity.DTOs.Response.CustomerDTO;
 import com.example.banksecurity.Services.CustomerService;
 import com.example.banksecurity.Services.RegistrationService;
 import com.example.banksecurity.Storage.Customer.Customer;
@@ -31,7 +32,7 @@ public class CustomerController {
 
     @GetMapping("/getAll")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Customer>> getAllCustomers() {
+    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
         return customerService.getAllCustomers();
     }
 

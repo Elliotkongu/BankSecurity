@@ -1,12 +1,15 @@
 package com.example.banksecurity.Services;
 
 import com.example.banksecurity.DTOs.Request.StartTransactionDTO;
+import com.example.banksecurity.DTOs.Response.CustomerDTO;
 import com.example.banksecurity.Storage.Customer.Customer;
 import com.example.banksecurity.Storage.Customer.CustomerRepository;
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccount;
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccountRepository;
 import com.example.banksecurity.Storage.Transaction.Transaction;
 import com.example.banksecurity.Storage.Transaction.TransactionRepository;
+import com.example.banksecurity.Storage.User.User;
+import com.example.banksecurity.Storage.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,20 +24,32 @@ public class CustomerService {
     CustomerRepository customerRepository;
     SavingsAccountRepository savingsAccountRepository;
     TransactionRepository transactionRepository;
+    UserRepository userRepository;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, SavingsAccountRepository savingsAccountRepository, TransactionRepository transactionRepository) {
+    public CustomerService(CustomerRepository customerRepository, SavingsAccountRepository savingsAccountRepository,
+                           TransactionRepository transactionRepository, UserRepository userRepository) {
         this.customerRepository = customerRepository;
         this.savingsAccountRepository = savingsAccountRepository;
         this.transactionRepository = transactionRepository;
+        this.userRepository = userRepository;
     }
 
     public Customer addCustomer(Long userId) {
         return customerRepository.save(new Customer(userId));
     }
 
-    public ResponseEntity<List<Customer>> getAllCustomers() {
-        return ResponseEntity.ok().body(customerRepository.findAll());
+    public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
+        List<CustomerDTO> customerDTOs = new ArrayList<>();
+
+        for (Customer customer: customerRepository.findAll()) {
+            if (userRepository.findById(customer.getUserId()).isPresent()) {
+                User user = userRepository.findById(customer.getUserId()).get();
+                customerDTOs.add(new CustomerDTO(customer.getId(), customer.getFirstName(), customer.getLastName(),
+                        customer.getUserId(), user.getUsername(), customer.getMainAccount(), customer.getSavingsAccountList()));
+            }
+        }
+        return ResponseEntity.ok().body(customerDTOs);
     }
 
     public ResponseEntity<String> addToMainAccount(Long id, Double amount) {
