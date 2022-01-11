@@ -30,6 +30,7 @@ public class CustomerController {
     }
 
     @GetMapping("/getAll")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Customer>> getAllCustomers() {
         return customerService.getAllCustomers();
     }
@@ -41,26 +42,31 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}/subtractfrommainaccount")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> subtractFromMainAccount(@PathVariable("id") Long id, @RequestParam Double amount) {
         return customerService.subtractFromMainAccount(id, amount);
     }
 
     @PutMapping("/{id}/addsavingsaccount")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> addSavingsAccount(@PathVariable("id") Long id) {
         return customerService.addNewSavingsAccount(id);
     }
 
     @GetMapping("/{id}/getsavingsaccounts")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<?> getAllSavingsAccounts(@PathVariable("id") Long id) {
         return customerService.getAllSavingsAccounts(id);
     }
 
     @PutMapping("/{id}/transfertosavings/{savingsIndex}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> transferToSavings(@PathVariable("id") Long id, @PathVariable("savingsIndex") Integer savingsIndex, @RequestParam String amount) {
         return customerService.transferToSavings(id, savingsIndex, new BigDecimal(amount));
     }
 
     @PutMapping("/{id}/transferfromsavings/{savingsIndex}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> transferFromSavings(@PathVariable("id") Long id, @PathVariable("savingsIndex") Integer savingsIndex, @RequestParam String amount) {
         return customerService.transferFromSavings(id, savingsIndex, new BigDecimal(amount));
     }
@@ -71,11 +77,13 @@ public class CustomerController {
     }
 
     @PostMapping("/starttransaction")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> startTransaction(@RequestBody StartTransactionDTO startTransactionDTO) {
         return customerService.startTransaction(startTransactionDTO);
     }
 
     @GetMapping("/{id}/viewtransactions")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')")
     public ResponseEntity<List<Transaction>> getAllTransactionsByCustomerId(@PathVariable("id") Long id) {
         return customerService.getAllTransactionsByCustomerId(id);
     }
