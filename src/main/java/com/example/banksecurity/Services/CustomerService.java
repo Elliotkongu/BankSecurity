@@ -1,14 +1,18 @@
 package com.example.banksecurity.Services;
 
+import com.example.banksecurity.DTOs.Request.StartTransactionDTO;
 import com.example.banksecurity.Storage.Customer.Customer;
 import com.example.banksecurity.Storage.Customer.CustomerRepository;
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccount;
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccountRepository;
+import com.example.banksecurity.Storage.Transaction.Transaction;
+import com.example.banksecurity.Storage.Transaction.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,11 +20,13 @@ public class CustomerService {
 
     CustomerRepository customerRepository;
     SavingsAccountRepository savingsAccountRepository;
+    TransactionRepository transactionRepository;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, SavingsAccountRepository savingsAccountRepository) {
+    public CustomerService(CustomerRepository customerRepository, SavingsAccountRepository savingsAccountRepository, TransactionRepository transactionRepository) {
         this.customerRepository = customerRepository;
         this.savingsAccountRepository = savingsAccountRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     public Customer addCustomer(Long userId) {
@@ -113,5 +119,32 @@ public class CustomerService {
             }
         }
         return ResponseEntity.badRequest().body("Customer not found");
+    }
+
+    public ResponseEntity<String> startTransaction(StartTransactionDTO startTransactionDTO) {
+        if (customerRepository.findById(startTransactionDTO.getCustomerFrom()).isPresent()) {
+            if (customerRepository.findById(startTransactionDTO.getCustomerTo()).isPresent()) {
+
+                Transaction transaction = new Transaction(startTransactionDTO.getCustomerFrom(),
+                        startTransactionDTO.getCustomerTo(), startTransactionDTO.getAmount());
+                transactionRepository.save(transaction);
+                return ResponseEntity.ok().body("Transaction started, waiting for banker to accept");
+            } else {
+                return ResponseEntity.badRequest().body("Receiver customer not found");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Sender customer not found");
+        }
+    }
+
+    public ResponseEntity<List<Transaction>> getAllTransactionsByCustomerId(Long id) {
+        List<Transaction> returnList = new ArrayList<>();
+
+        for (Transaction transaction : transactionRepository.findAll()) {
+            if (transaction.getCustomerFrom().equals(id) || transaction.getCustomerTo().equals(id)) {
+                returnList.add(transaction);
+            }
+        }
+        return ResponseEntity.ok().body(returnList);
     }
 }

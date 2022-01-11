@@ -39,7 +39,7 @@ public class Customer {
         mainAccount = mainAccount.add(amount);
     }
     public void subtractFromMainAccount(BigDecimal amount) {
-        mainAccount = mainAccount.add(amount);
+        mainAccount = mainAccount.subtract(amount);
     }
 
     public BigDecimal transferToSavings(Integer savingsIndex, BigDecimal amount) {

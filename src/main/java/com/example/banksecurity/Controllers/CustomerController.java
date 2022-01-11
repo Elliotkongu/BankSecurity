@@ -1,10 +1,12 @@
 package com.example.banksecurity.Controllers;
 
 import com.example.banksecurity.DTOs.Request.CustomerRegistrationDTO;
+import com.example.banksecurity.DTOs.Request.StartTransactionDTO;
 import com.example.banksecurity.Services.CustomerService;
 import com.example.banksecurity.Services.RegistrationService;
 import com.example.banksecurity.Storage.Customer.Customer;
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccount;
+import com.example.banksecurity.Storage.Transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -66,5 +68,15 @@ public class CustomerController {
     @PostMapping("/register")
     public ResponseEntity<String> sendRegisterRequest(@RequestBody CustomerRegistrationDTO customerRegistrationDTO) {
         return registrationService.sendRegistrationRequest(customerRegistrationDTO);
+    }
+
+    @PostMapping("/starttransaction")
+    public ResponseEntity<String> startTransaction(@RequestBody StartTransactionDTO startTransactionDTO) {
+        return customerService.startTransaction(startTransactionDTO);
+    }
+
+    @GetMapping("/{id}/viewtransactions")
+    public ResponseEntity<List<Transaction>> getAllTransactionsByCustomerId(@PathVariable("id") Long id) {
+        return customerService.getAllTransactionsByCustomerId(id);
     }
 }

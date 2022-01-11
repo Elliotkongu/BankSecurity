@@ -1,5 +1,6 @@
 package com.example.banksecurity.Controllers;
 
+import com.example.banksecurity.DTOs.Response.RegistrationRequestDTO;
 import com.example.banksecurity.Services.BankerService;
 import com.example.banksecurity.Services.RegistrationService;
 import com.example.banksecurity.Storage.Banker.Banker;
@@ -33,7 +34,12 @@ public class BankerController {
     }
 
     @GetMapping("/getregistrationrequests")
-    public ResponseEntity<List<RegistrationRequest>> getAllRegistrationRequests() {
+    public ResponseEntity<List<RegistrationRequestDTO>> getAllRegistrationRequests() {
         return bankerService.getAllRegistrationRequests();
+    }
+
+    @PutMapping("handletransaction/{id}")
+    public ResponseEntity<String> handleTransaction(@PathVariable("id") Long transactionId) {
+        return bankerService.handleTransaction(transactionId);
     }
 }
