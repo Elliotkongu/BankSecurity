@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/login")
@@ -19,7 +21,7 @@ public class LoginController {
     }
 
     @PostMapping
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginDTO loginDTO) {
-        return loginService.authenticateUser(loginDTO);
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginDTO loginDTO, HttpServletResponse response) {
+        return loginService.authenticateUser(loginDTO, response);
     }
 }

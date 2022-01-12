@@ -12,6 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,7 @@ public class LoginService {
         this.jwtUtils = jwtUtils;
     }
 
-    public ResponseEntity<?> authenticateUser(LoginDTO loginDTO) {
+    public ResponseEntity<?> authenticateUser(LoginDTO loginDTO, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
 
@@ -39,6 +41,15 @@ public class LoginService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         System.out.println(roles);
+        setCookies(response, jwt);
         return ResponseEntity.ok(jwt);
+    }
+
+
+    public void setCookies(HttpServletResponse response, String jwt) {
+        Cookie cookie = new Cookie("token", jwt);
+        cookie.setMaxAge(60 * 60 * 24);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
     }
 }

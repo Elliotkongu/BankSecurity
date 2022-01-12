@@ -2,8 +2,6 @@ package com.example.banksecurity.Services;
 
 import com.example.banksecurity.DTOs.Request.BankerRegistrationDTO;
 import com.example.banksecurity.DTOs.Request.CustomerRegistrationDTO;
-import com.example.banksecurity.Storage.Banker.Banker;
-import com.example.banksecurity.Storage.Banker.BankerRepository;
 import com.example.banksecurity.Storage.Customer.Customer;
 import com.example.banksecurity.Storage.Customer.CustomerRepository;
 import com.example.banksecurity.Storage.Customer.RegistrationRequest.RegistrationRequest;
