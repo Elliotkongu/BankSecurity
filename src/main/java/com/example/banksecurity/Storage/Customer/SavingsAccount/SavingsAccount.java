@@ -16,7 +16,7 @@ import java.util.Objects;
 @Entity
 public class SavingsAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long customerId;
     private BigDecimal account;
