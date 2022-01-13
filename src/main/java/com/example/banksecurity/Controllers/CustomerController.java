@@ -5,8 +5,6 @@ import com.example.banksecurity.DTOs.Request.StartTransactionDTO;
 import com.example.banksecurity.DTOs.Response.CustomerDTO;
 import com.example.banksecurity.Services.CustomerService;
 import com.example.banksecurity.Services.RegistrationService;
-import com.example.banksecurity.Storage.Customer.Customer;
-import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccount;
 import com.example.banksecurity.Storage.Transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

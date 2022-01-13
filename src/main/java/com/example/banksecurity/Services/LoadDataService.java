@@ -3,6 +3,9 @@ package com.example.banksecurity.Services;
 import com.example.banksecurity.Storage.Admin.Admin;
 import com.example.banksecurity.Storage.Admin.AdminRepository;
 import com.example.banksecurity.Storage.Customer.CustomerRepository;
+import com.example.banksecurity.Storage.Message.MessageType.EMessageType;
+import com.example.banksecurity.Storage.Message.MessageType.MessageType;
+import com.example.banksecurity.Storage.Message.MessageType.MessageTypeRepository;
 import com.example.banksecurity.Storage.User.Role.ERole;
 import com.example.banksecurity.Storage.User.Role.Role;
 import com.example.banksecurity.Storage.User.Role.RoleRepository;
@@ -33,7 +36,8 @@ public class LoadDataService implements CommandLineRunner {
     BankerService bankerService;
     @Autowired
     AdminRepository adminRepository;
-
+    @Autowired
+    MessageTypeRepository messageTypeRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -48,6 +52,18 @@ public class LoadDataService implements CommandLineRunner {
         }
 
         roleRepository.findAll().forEach(role -> System.out.println(role.getName()));
+
+        if (messageTypeRepository.findByMessageType(EMessageType.FEEDBACK).isEmpty()) {
+            messageTypeRepository.save(new MessageType(EMessageType.FEEDBACK));
+        }
+        if (messageTypeRepository.findByMessageType(EMessageType.SUPPORT).isEmpty()) {
+            messageTypeRepository.save(new MessageType(EMessageType.SUPPORT));
+        }
+        if (messageTypeRepository.findByMessageType(EMessageType.ADMIN_REPLY).isEmpty()) {
+            messageTypeRepository.save(new MessageType(EMessageType.ADMIN_REPLY));
+        }
+
+        messageTypeRepository.findAll().forEach(messageType -> System.out.println(messageType.getMessageType()));
 
         if (userRepository.findAll().isEmpty()) {
             registerCustomer();
