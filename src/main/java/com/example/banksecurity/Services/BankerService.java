@@ -33,8 +33,8 @@ public class BankerService {
         this.customerRepository = customerRepository;
     }
 
-    public Banker addBanker(Long userId) {
-        return bankerRepository.save(new Banker(userId));
+    public void addBanker(Long userId) {
+        bankerRepository.save(new Banker(userId));
     }
 
     public ResponseEntity<List<Banker>> getAllBankers() {
