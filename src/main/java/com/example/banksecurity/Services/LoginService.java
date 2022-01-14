@@ -50,6 +50,8 @@ public class LoginService {
         Cookie cookie = new Cookie("token", jwt);
         cookie.setMaxAge(60 * 60 * 24);
         cookie.setHttpOnly(true);
+        //Makes the cookie only work on secure websites using https
+        cookie.setSecure(false); //true on proper projects
         response.addCookie(cookie);
     }
 }
