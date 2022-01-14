@@ -1,6 +1,7 @@
 package com.example.banksecurity.DTOs.Response;
 
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccount;
+import com.example.banksecurity.Storage.Message.Message;
 import lombok.Value;
 
 import java.math.BigDecimal;
@@ -15,4 +16,5 @@ public class CustomerDTO {
     String username;
     BigDecimal mainAccount;
     List<SavingsAccount> savingsAccountList;
+    List<Message> inbox;
 }

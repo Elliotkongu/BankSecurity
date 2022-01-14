@@ -47,7 +47,7 @@ public class CustomerService {
             if (userRepository.findById(customer.getUserId()).isPresent()) {
                 User user = userRepository.findById(customer.getUserId()).get();
                 customerDTOs.add(new CustomerDTO(customer.getId(), customer.getFirstName(), customer.getLastName(),
-                        customer.getUserId(), user.getUsername(), customer.getMainAccount(), customer.getSavingsAccountList()));
+                        customer.getUserId(), user.getUsername(), customer.getMainAccount(), customer.getSavingsAccountList(), user.getInbox()));
             }
         }
         return ResponseEntity.ok().body(customerDTOs);

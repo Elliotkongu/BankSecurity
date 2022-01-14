@@ -1,5 +1,6 @@
 package com.example.banksecurity.Storage.User;
 
+import com.example.banksecurity.Storage.Message.Message;
 import com.example.banksecurity.Storage.User.Role.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +10,7 @@ import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -37,6 +36,9 @@ public class User {
         this.password = password;
     }
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<Message> inbox = new ArrayList<>();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -48,9 +50,5 @@ public class User {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    public Set<Role> getRoles() {
-        return role;
     }
 }
