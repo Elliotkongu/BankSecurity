@@ -2,8 +2,8 @@ package com.example.banksecurity.Security.JWT;
 
 import com.example.banksecurity.Security.UserDetails.UserDetailsImpl;
 import io.jsonwebtoken.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;

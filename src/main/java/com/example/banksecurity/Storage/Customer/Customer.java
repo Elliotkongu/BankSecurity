@@ -1,7 +1,10 @@
 package com.example.banksecurity.Storage.Customer;
 
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccount;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -27,7 +30,7 @@ public class Customer {
 
     private BigDecimal mainAccount;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     private List<SavingsAccount> savingsAccountList;
 
     public Customer(Long userId) {
