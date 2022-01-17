@@ -3,12 +3,14 @@ package com.example.banksecurity.Controllers;
 import com.example.banksecurity.DTOs.Request.CustomerRegistrationDTO;
 import com.example.banksecurity.DTOs.Request.StartTransactionDTO;
 import com.example.banksecurity.DTOs.Response.CustomerDTO;
+import com.example.banksecurity.Security.UserDetails.UserDetailsImpl;
 import com.example.banksecurity.Services.CustomerService;
 import com.example.banksecurity.Services.RegistrationService;
 import com.example.banksecurity.Storage.Transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -83,7 +85,7 @@ public class CustomerController {
 
     @GetMapping("/{id}/viewtransactions")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')")
-    public ResponseEntity<List<Transaction>> getAllTransactionsByCustomerId(@PathVariable("id") Long id) {
-        return customerService.getAllTransactionsByCustomerId(id);
+    public ResponseEntity<?> getAllTransactionsByCustomerId(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return customerService.getAllTransactionsByCustomerId(id, userDetails);
     }
 }

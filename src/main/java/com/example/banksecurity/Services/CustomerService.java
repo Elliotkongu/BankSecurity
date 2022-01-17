@@ -2,20 +2,24 @@ package com.example.banksecurity.Services;
 
 import com.example.banksecurity.DTOs.Request.StartTransactionDTO;
 import com.example.banksecurity.DTOs.Response.CustomerDTO;
+import com.example.banksecurity.Security.UserDetails.UserDetailsImpl;
 import com.example.banksecurity.Storage.Customer.Customer;
 import com.example.banksecurity.Storage.Customer.CustomerRepository;
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccount;
 import com.example.banksecurity.Storage.Customer.SavingsAccount.SavingsAccountRepository;
 import com.example.banksecurity.Storage.Transaction.Transaction;
 import com.example.banksecurity.Storage.Transaction.TransactionRepository;
+import com.example.banksecurity.Storage.User.Role.ERole;
 import com.example.banksecurity.Storage.User.User;
 import com.example.banksecurity.Storage.User.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -152,16 +156,30 @@ public class CustomerService {
         }
     }
 
-    public ResponseEntity<List<Transaction>> getAllTransactionsByCustomerId(Long id) {
+    public ResponseEntity<?> getAllTransactionsByCustomerId(Long id, UserDetailsImpl userDetails) {
         List<Transaction> returnList = new ArrayList<>();
-
-        for (Transaction transaction : transactionRepository.findAll()) {
-            if (transaction.getCustomerFrom().equals(id) || transaction.getCustomerTo().equals(id)) {
-                returnList.add(transaction);
+        GrantedAuthority authority = userDetails.getAuthorities().iterator().next();
+        if (authority.getAuthority().equals("ROLE_CUSTOMER")) {
+            if (userDetails.getId().equals(id)) {
+                for (Transaction transaction : transactionRepository.findAll()) {
+                    if (transaction.getCustomerFrom().equals(id) || transaction.getCustomerTo().equals(id)) {
+                        returnList.add(transaction);
+                    }
+                }
+            } else {
+                return ResponseEntity.badRequest().body("You cannot access other people history!");
+            }
+        } else {
+            for (Transaction transaction : transactionRepository.findAll()) {
+                if (transaction.getCustomerFrom().equals(id) || transaction.getCustomerTo().equals(id)) {
+                    returnList.add(transaction);
+                }
             }
         }
         return ResponseEntity.ok().body(returnList);
     }
 
-
+    public ResponseEntity<?> getRoles(UserDetailsImpl userDetails) {
+        return ResponseEntity.ok().body(userDetails.getAuthorities());
+    }
 }
