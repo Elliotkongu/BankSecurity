@@ -13,9 +13,20 @@ There are 3 base users (one of each role) but these aswell would be removed in p
 the project goes up on a cloud.
 
 The project can be run in docker. You will need to add a BankSecurity.env file with the MYSQL_ROOT_PASSWORD
+being your own root password
 
 ROLE FUNCTIONALITIES:
 
 CUSTOMER: open savings account, start transaction with another customer, add money to main account,
 remove money from main account, transfer money from main account to selected savings account, 
-transfer money from selected savings account to main account
+transfer money from selected savings account to main account, view all transactions made
+
+A customer cannot interact with another customers account in any way except starting a transaction
+
+BANKER: open customer account, view all registration requests, handle a transaction
+
+Customers and Bankers both can send feedback and support to Admins
+
+ADMIN: view all customers, view all Bankers, view a customer's transaction history, view all registration requests
+register new Bankers, view all messages, reply to a message (feedback or support)
+
