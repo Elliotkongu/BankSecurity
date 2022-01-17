@@ -6,7 +6,6 @@ import com.example.banksecurity.DTOs.Response.CustomerDTO;
 import com.example.banksecurity.Security.UserDetails.UserDetailsImpl;
 import com.example.banksecurity.Services.CustomerService;
 import com.example.banksecurity.Services.RegistrationService;
-import com.example.banksecurity.Storage.Transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,38 +37,40 @@ public class CustomerController {
 
     @PutMapping("/{id}/addtomainaccount")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<String> addToMainAccount(@PathVariable("id") Long id, @RequestParam Double amount) {
-        return customerService.addToMainAccount(id, amount);
+    public ResponseEntity<String> addToMainAccount(@PathVariable("id") Long id, @RequestParam Double amount, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return customerService.addToMainAccount(id, amount, userDetails);
     }
 
     @PutMapping("/{id}/subtractfrommainaccount")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<String> subtractFromMainAccount(@PathVariable("id") Long id, @RequestParam Double amount) {
-        return customerService.subtractFromMainAccount(id, amount);
+    public ResponseEntity<String> subtractFromMainAccount(@PathVariable("id") Long id, @RequestParam Double amount, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return customerService.subtractFromMainAccount(id, amount, userDetails);
     }
 
     @PutMapping("/{id}/addsavingsaccount")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<String> addSavingsAccount(@PathVariable("id") Long id) {
-        return customerService.addNewSavingsAccount(id);
+    public ResponseEntity<String> addSavingsAccount(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return customerService.addNewSavingsAccount(id, userDetails);
     }
 
     @GetMapping("/{id}/getsavingsaccounts")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<?> getAllSavingsAccounts(@PathVariable("id") Long id) {
-        return customerService.getAllSavingsAccounts(id);
+    public ResponseEntity<?> getAllSavingsAccounts(@PathVariable("id") Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return customerService.getAllSavingsAccounts(id, userDetails);
     }
 
     @PutMapping("/{id}/transfertosavings/{savingsIndex}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<String> transferToSavings(@PathVariable("id") Long id, @PathVariable("savingsIndex") Integer savingsIndex, @RequestParam String amount) {
-        return customerService.transferToSavings(id, savingsIndex, new BigDecimal(amount));
+    public ResponseEntity<String> transferToSavings(@PathVariable("id") Long id, @PathVariable("savingsIndex") Integer savingsIndex, @RequestParam String amount,
+                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return customerService.transferToSavings(id, savingsIndex, new BigDecimal(amount), userDetails);
     }
 
     @PutMapping("/{id}/transferfromsavings/{savingsIndex}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<String> transferFromSavings(@PathVariable("id") Long id, @PathVariable("savingsIndex") Integer savingsIndex, @RequestParam String amount) {
-        return customerService.transferFromSavings(id, savingsIndex, new BigDecimal(amount));
+    public ResponseEntity<String> transferFromSavings(@PathVariable("id") Long id, @PathVariable("savingsIndex") Integer savingsIndex, @RequestParam String amount,
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return customerService.transferFromSavings(id, savingsIndex, new BigDecimal(amount), userDetails);
     }
 
     @PostMapping("/register")

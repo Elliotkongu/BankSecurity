@@ -56,85 +56,109 @@ public class CustomerService {
         return ResponseEntity.ok().body(customerDTOs);
     }
 
-    public ResponseEntity<String> addToMainAccount(Long id, Double amount) {
+    public ResponseEntity<String> addToMainAccount(Long id, Double amount, UserDetailsImpl userDetails) {
         if (customerRepository.findById(id).isPresent()) {
-            Customer customer = customerRepository.findById(id).get();
-            customer.addToMainAccount(BigDecimal.valueOf(amount));
-            customerRepository.save(customer);
-            return ResponseEntity.ok().body(amount + " successfully added to account");
-        } else {
-            return ResponseEntity.badRequest().body("Customer not found");
-        }
-    }
-
-    public ResponseEntity<String> subtractFromMainAccount(Long id, Double amount) {
-        if (customerRepository.findById(id).isPresent()) {
-            Customer customer = customerRepository.findById(id).get();
-            customer.subtractFromMainAccount(BigDecimal.valueOf(amount));
-            customerRepository.save(customer);
-            return ResponseEntity.ok().body(amount + " successfully removed from account");
-        } else {
-            return ResponseEntity.badRequest().body("Customer not found");
-        }
-    }
-
-    public ResponseEntity<String> addNewSavingsAccount(Long id) {
-        if (customerRepository.findById(id).isPresent()) {
-            Customer customer = customerRepository.findById(id).get();
-            SavingsAccount savingsAccount = new SavingsAccount();
-            savingsAccount.setCustomerId(customer.getId());
-            savingsAccountRepository.save(savingsAccount);
-            customer.getSavingsAccountList().add(savingsAccount);
-            customerRepository.save(customer);
-            return ResponseEntity.ok().body("Successfully added new savings account");
-        } else {
-            return ResponseEntity.badRequest().body("Custoemr not found");
-        }
-    }
-
-    public ResponseEntity<?> getAllSavingsAccounts(Long id) {
-        if (customerRepository.findById(id).isPresent()) {
-            return ResponseEntity.ok().body(customerRepository.findById(id).get().getSavingsAccountList());
-        } else {
-            return ResponseEntity.badRequest().body("Customer not found");
-        }
-    }
-
-    public ResponseEntity<String> transferToSavings(Long id, Integer savingsIndex, BigDecimal amount) {
-        if (customerRepository.findById(id).isPresent()) {
-            Customer customer = customerRepository.findById(id).get();
-
-            if (customer.getSavingsAccountList().size() >= savingsIndex) {
-                BigDecimal amountTransferred = customer.transferToSavings(savingsIndex - 1, amount);
-                savingsAccountRepository.save(customer.getSavingsAccountList().get(savingsIndex - 1));
+            if (userDetails.getId().equals(id)) {
+                Customer customer = customerRepository.findById(id).get();
+                customer.addToMainAccount(BigDecimal.valueOf(amount));
                 customerRepository.save(customer);
-                if (amountTransferred.compareTo(amount) == 0) {
-                    return ResponseEntity.ok().body("Successfully transferred " + amount.toString() + " from main account to savings " + savingsIndex);
+                return ResponseEntity.ok().body(amount + " successfully added to account");
+            } else {
+                return ResponseEntity.badRequest().body("You can't add to another customers account!");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Customer not found");
+        }
+    }
+
+    public ResponseEntity<String> subtractFromMainAccount(Long id, Double amount, UserDetailsImpl userDetails) {
+        if (customerRepository.findById(id).isPresent()) {
+            if (userDetails.getId().equals(id)) {
+                Customer customer = customerRepository.findById(id).get();
+                customer.subtractFromMainAccount(BigDecimal.valueOf(amount));
+                customerRepository.save(customer);
+                return ResponseEntity.ok().body(amount + " successfully removed from account");
+            } else {
+                return ResponseEntity.badRequest().body("You can't remove from another customers account!");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Customer not found");
+        }
+    }
+
+    public ResponseEntity<String> addNewSavingsAccount(Long id, UserDetailsImpl userDetails) {
+        if (customerRepository.findById(id).isPresent()) {
+            if (userDetails.getId().equals(id)) {
+                Customer customer = customerRepository.findById(id).get();
+                SavingsAccount savingsAccount = new SavingsAccount();
+                savingsAccount.setCustomerId(customer.getId());
+                savingsAccountRepository.save(savingsAccount);
+                customer.getSavingsAccountList().add(savingsAccount);
+                customerRepository.save(customer);
+                return ResponseEntity.ok().body("Successfully added new savings account");
+            } else {
+                return ResponseEntity.badRequest().body("You can't add savings to another customers account!");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Customer not found");
+        }
+    }
+
+    public ResponseEntity<?> getAllSavingsAccounts(Long id, UserDetailsImpl userDetails) {
+        if (customerRepository.findById(id).isPresent()) {
+            if (userDetails.getId().equals(id)) {
+                return ResponseEntity.ok().body(customerRepository.findById(id).get().getSavingsAccountList());
+            } else {
+                return ResponseEntity.badRequest().body("You can't view another customers accounts!");
+            }
+        } else {
+            return ResponseEntity.badRequest().body("Customer not found");
+        }
+    }
+
+    public ResponseEntity<String> transferToSavings(Long id, Integer savingsIndex, BigDecimal amount, UserDetailsImpl userDetails) {
+        if (customerRepository.findById(id).isPresent()) {
+            if (userDetails.getId().equals(id)) {
+                Customer customer = customerRepository.findById(id).get();
+
+                if (customer.getSavingsAccountList().size() >= savingsIndex) {
+                    BigDecimal amountTransferred = customer.transferToSavings(savingsIndex - 1, amount);
+                    savingsAccountRepository.save(customer.getSavingsAccountList().get(savingsIndex - 1));
+                    customerRepository.save(customer);
+                    if (amountTransferred.compareTo(amount) == 0) {
+                        return ResponseEntity.ok().body("Successfully transferred " + amount.toString() + " from main account to savings " + savingsIndex);
+                    } else {
+                        return ResponseEntity.ok().body("Successfully transferred " + amountTransferred + " from main account to savings " + savingsIndex);
+                    }
                 } else {
-                    return ResponseEntity.ok().body("Successfully transferred " + amountTransferred + " from main account to savings " + savingsIndex);
+                    return ResponseEntity.badRequest().body("Customer does not have that many savings accounts");
                 }
             } else {
-                return ResponseEntity.badRequest().body("Customer does not have that many savings accounts");
+                return ResponseEntity.badRequest().body("You can't transfer to an account that isn't yours!");
             }
         }
         return ResponseEntity.badRequest().body("Customer not found");
     }
 
-    public ResponseEntity<String> transferFromSavings(Long id, Integer savingsIndex, BigDecimal amount) {
+    public ResponseEntity<String> transferFromSavings(Long id, Integer savingsIndex, BigDecimal amount, UserDetailsImpl userDetails) {
         if (customerRepository.findById(id).isPresent()) {
-            Customer customer = customerRepository.findById(id).get();
+            if (userDetails.getId().equals(id)) {
+                Customer customer = customerRepository.findById(id).get();
 
-            if (customer.getSavingsAccountList().size() >= savingsIndex) {
-                BigDecimal amountTransferred = customer.transferFromSavings(savingsIndex - 1, amount);
-                savingsAccountRepository.save(customer.getSavingsAccountList().get(savingsIndex - 1));
-                customerRepository.save(customer);
-                if (amountTransferred.compareTo(amount) == 0) {
-                    return ResponseEntity.ok().body("Successfully transferred " + amount.toString() + " from savings " + savingsIndex + " to main account");
+                if (customer.getSavingsAccountList().size() >= savingsIndex) {
+                    BigDecimal amountTransferred = customer.transferFromSavings(savingsIndex - 1, amount);
+                    savingsAccountRepository.save(customer.getSavingsAccountList().get(savingsIndex - 1));
+                    customerRepository.save(customer);
+                    if (amountTransferred.compareTo(amount) == 0) {
+                        return ResponseEntity.ok().body("Successfully transferred " + amount.toString() + " from savings " + savingsIndex + " to main account");
+                    } else {
+                        return ResponseEntity.ok().body("Successfully transferred " + amountTransferred + " from savings " + savingsIndex + " main account");
+                    }
                 } else {
-                    return ResponseEntity.ok().body("Successfully transferred " + amountTransferred + " from savings " + savingsIndex + " main account");
+                    return ResponseEntity.badRequest().body("Customer does not have that many savings accounts");
                 }
             } else {
-                return ResponseEntity.badRequest().body("Customer does not have that many savings accounts");
+                return ResponseEntity.badRequest().body("You can't transfer from an account that isn't yours!");
             }
         }
         return ResponseEntity.badRequest().body("Customer not found");
